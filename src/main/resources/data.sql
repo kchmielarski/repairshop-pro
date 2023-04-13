@@ -1,0 +1,2 @@
+insert into customer(version, id, first_name, last_name, email, phone, date_of_birth, occupation, role, important) values (1, 1, 'Leszek', 'Czarny', 'lczarny@gmail.com', '+48 17 888 991', '1963-09-05', 'Księgowy', 'Główny Księgowy', false)
+insert into customer(version, id, first_name, last_name, email, phone, date_of_birth, occupation, role, important) values (1, 2, 'Leszek', 'Biały', 'lbialy@gmail.com', '+48 17 888 992', '1981-01-06', 'Menedżer', 'Kierownik magazynu', true)
