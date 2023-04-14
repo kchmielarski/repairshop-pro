@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/security/user-accounts")
+@RequestMapping("api/security/user-accounts")
 public class UserAccountController {
 
   @Autowired

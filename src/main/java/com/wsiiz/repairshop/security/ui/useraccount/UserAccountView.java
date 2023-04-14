@@ -19,7 +19,7 @@ import com.wsiiz.repairshop.security.domain.useraccount.UserAccountService;
 import com.wsiiz.repairshop.security.domain.useraccount.UserType;
 
 @PageTitle("Użytkownicy")
-@Route(value = "user-accounts/:id?/:action?(edit)", layout = MainLayout.class)
+@Route(value = "gui/security/user-accounts/:id?/:action?(edit)", layout = MainLayout.class)
 @Uses(Icon.class)
 public class UserAccountView extends BaseView<UserAccount> {
 
@@ -33,7 +33,7 @@ public class UserAccountView extends BaseView<UserAccount> {
   Checkbox active;
 
   public UserAccountView(UserAccountFactory factory, UserAccountService service) {
-    super(UserAccount.class, factory, service, "user-accounts/%s/edit");
+    super(UserAccount.class, factory, service, "gui/security/user-accounts/%s/edit");
     createLayout();
   }
 

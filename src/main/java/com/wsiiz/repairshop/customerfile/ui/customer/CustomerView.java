@@ -10,7 +10,6 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 import com.wsiiz.repairshop.application.ui.MainLayout;
 import com.wsiiz.repairshop.customerfile.domain.customer.Customer;
 import com.wsiiz.repairshop.customerfile.domain.customer.CustomerFactory;
@@ -19,7 +18,7 @@ import com.wsiiz.repairshop.customerfile.domain.customer.CustomerService;
 import com.wsiiz.repairshop.foundation.ui.baseview.BaseView;
 
 @PageTitle("Klienci")
-@Route(value = "customers/:id?/:action?(edit)", layout = MainLayout.class)
+@Route(value = "gui/customerfile/customers/:id?/:action?(edit)", layout = MainLayout.class)
 @Uses(Icon.class)
 public class CustomerView extends BaseView<Customer> {
 
@@ -33,7 +32,7 @@ public class CustomerView extends BaseView<Customer> {
   Checkbox important;
 
   public CustomerView(CustomerFactory factory, CustomerService service) {
-    super(Customer.class, factory, service, "customers/%s/edit");
+    super(Customer.class, factory, service, "gui/customerfile/customers/%s/edit");
     createLayout();
   }
 
