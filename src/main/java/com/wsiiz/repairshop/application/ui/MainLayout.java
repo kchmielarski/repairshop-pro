@@ -1,9 +1,6 @@
 package com.wsiiz.repairshop.application.ui;
 
 
-import com.wsiiz.repairshop.foundation.ui.appnav.AppNav;
-import com.wsiiz.repairshop.foundation.ui.appnav.AppNavItem;
-import com.wsiiz.repairshop.customerfile.ui.customer.CustomerView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.Footer;
@@ -13,8 +10,10 @@ import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.wsiiz.repairshop.customerfile.ui.customer.CustomerView;
+import com.wsiiz.repairshop.foundation.ui.appnav.AppNav;
+import com.wsiiz.repairshop.foundation.ui.appnav.AppNavItem;
 import com.wsiiz.repairshop.foundation.ui.i18n.I18nAware;
-import com.wsiiz.repairshop.security.ui.useraccount.UserAccountView;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 /**
@@ -56,7 +55,6 @@ public class MainLayout extends AppLayout implements I18nAware {
     AppNav nav = new AppNav();
 
     nav.addItem(new AppNavItem(i18n("customers"), CustomerView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
-    nav.addItem(new AppNavItem(i18n("userAccounts"), UserAccountView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
     nav.addItem(new AppNavItem(i18n("about"), AboutView.class, LineAwesomeIcon.FILE.create()));
 
     return nav;
