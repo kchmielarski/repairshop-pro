@@ -1,4 +1,4 @@
-package com.wsiiz.repairshop.customerfile.domain;
+package com.wsiiz.repairshop.customerfile.domain.customer;
 
 import com.wsiiz.repairshop.foundation.domain.AbstractService;
 import lombok.RequiredArgsConstructor;
@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomerService implements AbstractService<Customer> {
 
-  private final CustomerRepository customerRepository;
+  private final CustomerRepository repository;
 
   @Override
   public JpaRepository<Customer, Long> getRepository() {
-    return customerRepository;
+    return repository;
   }
 
   @Override
   public JpaSpecificationExecutor<Customer> getSpecificationExecutor() {
-    return customerRepository;
+    return repository;
   }
 }

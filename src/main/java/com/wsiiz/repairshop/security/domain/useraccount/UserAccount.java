@@ -5,6 +5,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +20,11 @@ public class UserAccount extends BaseEntity {
   String userName;
   String login;
   UserType type;
+  LocalDate validFrom;
+  LocalDate validTo;
   LocalDateTime registrationTime;
   LocalDateTime recentLoginTime;
+  boolean active;
 
   @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "user_account_id")

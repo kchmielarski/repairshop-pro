@@ -1,4 +1,4 @@
-package com.wsiiz.repairshop.customerfile.domain;
+package com.wsiiz.repairshop.customerfile.domain.customer;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

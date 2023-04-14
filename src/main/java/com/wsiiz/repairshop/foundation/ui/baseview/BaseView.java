@@ -29,13 +29,13 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 public abstract class BaseView<E extends BaseEntity> extends Div implements BeforeEnterObserver, I18nAware {
 
-  final String routeTemplate;
-
   final AbstractFactory<E> factory;
   final AbstractService<E> service;
 
   protected Grid<E> grid;
   BeanValidationBinder<E> binder;
+
+  final String editPath;
 
   final Button cancel = new Button(i18n(BaseView.class, "cancel"));
   final Button save = new Button(i18n(BaseView.class, "save"));
@@ -43,11 +43,11 @@ public abstract class BaseView<E extends BaseEntity> extends Div implements Befo
   final Class<E> entityClass;
   protected E entity;
 
-  public BaseView(String routeTemplate, Class<E> entityClass, AbstractFactory<E> factory, AbstractService<E> service) {
-    this.routeTemplate = routeTemplate;
+  public BaseView(Class<E> entityClass, AbstractFactory<E> factory, AbstractService<E> service, String editPath) {
     this.entityClass = entityClass;
     this.factory = factory;
     this.service = service;
+    this.editPath = editPath;
   }
 
   protected void createLayout() {
@@ -72,7 +72,7 @@ public abstract class BaseView<E extends BaseEntity> extends Div implements Befo
     // when a row is selected or deselected, populate form
     grid.asSingleSelect().addValueChangeListener(event -> {
       if (event.getValue() != null) {
-        UI.getCurrent().navigate(String.format(routeTemplate, event.getValue().getId()));
+        UI.getCurrent().navigate(String.format(editPath, event.getValue().getId()));
       } else {
         clearForm();
         UI.getCurrent().navigate(getClass());
@@ -94,9 +94,12 @@ public abstract class BaseView<E extends BaseEntity> extends Div implements Befo
       try {
         if (entity == null) {
           this.entity = factory.create();
+          binder.writeBean(entity);
+          service.add(entity);
+        } else {
+          binder.writeBean(entity);
+          service.change(entity);
         }
-        binder.writeBean(entity);
-        service.update(entity);
         clearForm();
         refreshGrid();
         Notification.show("Data updated");

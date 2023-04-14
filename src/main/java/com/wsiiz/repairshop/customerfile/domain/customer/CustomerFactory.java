@@ -1,4 +1,4 @@
-package com.wsiiz.repairshop.customerfile.domain;
+package com.wsiiz.repairshop.customerfile.domain.customer;
 
 import com.wsiiz.repairshop.foundation.domain.AbstractFactory;
 import org.springframework.stereotype.Component;

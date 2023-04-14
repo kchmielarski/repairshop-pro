@@ -17,7 +17,11 @@ public interface AbstractService<E extends BaseEntity> {
     return getRepository().findById(id);
   }
 
-  default E update(E entity) {
+  default E add(E entity) {
+    return getRepository().save(entity);
+  }
+
+  default E change(E entity) {
     return getRepository().save(entity);
   }
 
