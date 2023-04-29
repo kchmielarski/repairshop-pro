@@ -39,6 +39,7 @@ public abstract class BaseView<E extends BaseEntity> extends Div implements Befo
 
   final Button cancel = new Button(i18n(BaseView.class, "cancel"));
   final Button save = new Button(i18n(BaseView.class, "save"));
+  final Button remove = new Button(i18n(BaseView.class, "remove"));
 
   final Class<E> entityClass;
   protected E entity;
@@ -113,6 +114,25 @@ public abstract class BaseView<E extends BaseEntity> extends Div implements Befo
         Notification.show("Failed to update the data. Check again that all values are valid");
       }
     });
+
+    remove.addClickListener(e -> {
+      try {
+        if (entity == null) {
+          Notification.show("Resource not selected");
+          return;
+        }
+        service.delete(entity.getId());
+        clearForm();
+        refreshGrid();
+        Notification.show("Data removed");
+        UI.getCurrent().navigate(getClass());
+      } catch (ObjectOptimisticLockingFailureException exception) {
+        Notification n = Notification.show(
+            "Error removing the data. Somebody else has updated the record while you were making changes.");
+        n.setPosition(Position.MIDDLE);
+        n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+      }
+    });
   }
 
   protected abstract void configureGrid();
@@ -154,7 +174,8 @@ public abstract class BaseView<E extends BaseEntity> extends Div implements Befo
     buttonLayout.setClassName("button-layout");
     cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
     save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-    buttonLayout.add(save, cancel);
+    remove.addThemeVariants(ButtonVariant.LUMO_ERROR);
+    buttonLayout.add(save, cancel, remove);
     editorLayoutDiv.add(buttonLayout);
   }
 
