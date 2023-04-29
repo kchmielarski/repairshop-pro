@@ -22,18 +22,26 @@ import com.wsiiz.repairshop.foundation.domain.AbstractFactory;
 import com.wsiiz.repairshop.foundation.domain.AbstractService;
 import com.wsiiz.repairshop.foundation.domain.BaseEntity;
 import com.wsiiz.repairshop.foundation.ui.i18n.I18nAware;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import lombok.val;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 public abstract class BaseView<E extends BaseEntity> extends Div implements BeforeEnterObserver, I18nAware {
 
+  final int DURATION_OK = 2000;
+  final int DURATION_ERR = 5000;
+
   final AbstractFactory<E> factory;
   final AbstractService<E> service;
 
   protected Grid<E> grid;
-  BeanValidationBinder<E> binder;
+
+  protected BeanValidationBinder<E> binder;
 
   final String editPath;
 
@@ -56,10 +64,14 @@ public abstract class BaseView<E extends BaseEntity> extends Div implements Befo
 
     this.grid = new Grid<>(entityClass, false);
 
+    this.binder = new BeanValidationBinder<>(entityClass);
+
     SplitLayout splitLayout = new SplitLayout();
 
     createGridLayout(splitLayout);
     createEditorLayout(splitLayout);
+
+    binder.bindInstanceFields(this);
 
     add(splitLayout);
 
@@ -80,12 +92,6 @@ public abstract class BaseView<E extends BaseEntity> extends Div implements Befo
       }
     });
 
-    // Configure Form
-    binder = new BeanValidationBinder<>(entityClass);
-
-    // Bind fields. This is where you'd define e.g. validation rules
-    binder.bindInstanceFields(this);
-
     cancel.addClickListener(e -> {
       clearForm();
       refreshGrid();
@@ -103,34 +109,40 @@ public abstract class BaseView<E extends BaseEntity> extends Div implements Befo
         }
         clearForm();
         refreshGrid();
-        Notification.show("Data updated");
+        Notification.show(i18n(BaseView.class, "writeSuccess"), DURATION_OK, Position.MIDDLE);
         UI.getCurrent().navigate(getClass());
       } catch (ObjectOptimisticLockingFailureException exception) {
-        Notification n = Notification.show(
-            "Error updating the data. Somebody else has updated the record while you were making changes.");
-        n.setPosition(Position.MIDDLE);
-        n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        Notification.show(i18n(BaseView.class, "simultaneousWrite"), DURATION_ERR, Position.MIDDLE)
+            .addThemeVariants(NotificationVariant.LUMO_ERROR);
       } catch (ValidationException validationException) {
-        Notification.show("Failed to update the data. Check again that all values are valid");
+        Notification.show(i18n(BaseView.class, "validationError"), DURATION_ERR, Position.MIDDLE);
+      } catch (Exception ex) {
+        if (ex.getCause() != null && ex.getCause().getCause() instanceof ConstraintViolationException) {
+          val messages = ((ConstraintViolationException) ex.getCause().getCause()).getConstraintViolations().stream()
+              .map(ConstraintViolation::getMessage)
+              .collect(Collectors.joining(", "));
+          Notification.show(messages, DURATION_ERR, Position.MIDDLE);
+        } else {
+          Notification.show(i18n(BaseView.class, "writeError"), DURATION_ERR, Position.MIDDLE)
+              .addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
       }
     });
 
     remove.addClickListener(e -> {
       try {
         if (entity == null) {
-          Notification.show("Resource not selected");
+          Notification.show(i18n(BaseView.class, "notSelected"), DURATION_OK, Position.MIDDLE);
           return;
         }
         service.delete(entity.getId());
         clearForm();
         refreshGrid();
-        Notification.show("Data removed");
+        Notification.show(i18n(BaseView.class, "removeSuccess"), DURATION_OK, Position.MIDDLE);
         UI.getCurrent().navigate(getClass());
       } catch (ObjectOptimisticLockingFailureException exception) {
-        Notification n = Notification.show(
-            "Error removing the data. Somebody else has updated the record while you were making changes.");
-        n.setPosition(Position.MIDDLE);
-        n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        Notification.show(i18n(BaseView.class, "simultaneousWrite"), DURATION_ERR, Position.MIDDLE)
+            .addThemeVariants(NotificationVariant.LUMO_ERROR);
       }
     });
   }
@@ -158,9 +170,8 @@ public abstract class BaseView<E extends BaseEntity> extends Div implements Befo
       if (entityFromBackend.isPresent()) {
         populateForm(entityFromBackend.get());
       } else {
-        Notification.show(
-            String.format("The requested entity was not found, ID = %s", id.get()), 3000,
-            Notification.Position.BOTTOM_START);
+        Notification.show(i18n(BaseView.class, "notFound") + ", ID=" + id.get(), 3000,
+            Position.MIDDLE);
         // when a row is selected but the data is no longer available,
         // refresh grid
         refreshGrid();
