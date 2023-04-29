@@ -1,5 +1,9 @@
 package com.wsiiz.repairshop.customerfile.ui.customer;
 
+import static com.wsiiz.repairshop.customerfile.domain.customer.Customer.peselValidation;
+import static com.wsiiz.repairshop.customerfile.domain.customer.CustomerConstraintValidator.obtainDateFromPesel;
+
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -16,6 +20,7 @@ import com.wsiiz.repairshop.customerfile.domain.customer.CustomerFactory;
 import com.wsiiz.repairshop.customerfile.domain.customer.CustomerRole;
 import com.wsiiz.repairshop.customerfile.domain.customer.CustomerService;
 import com.wsiiz.repairshop.foundation.ui.baseview.BaseView;
+import java.time.LocalDate;
 
 @PageTitle("Klienci")
 @Route(value = "gui/customerfile/customers/:id?/:action?(edit)", layout = MainLayout.class)
@@ -24,6 +29,7 @@ public class CustomerView extends BaseView<Customer> {
 
   TextField firstName;
   TextField lastName;
+  TextField pesel;
   TextField email;
   TextField phone;
   DatePicker dateOfBirth;
@@ -56,6 +62,7 @@ public class CustomerView extends BaseView<Customer> {
 
     firstName = new TextField(i18n("firstName"));
     lastName = new TextField(i18n("lastName"));
+    pesel = new TextField(i18n("pesel"));
     email = new TextField(i18n("email"));
     phone = new TextField(i18n("phone"));
     dateOfBirth = new DatePicker(i18n("dateOfBirth"));
@@ -63,11 +70,24 @@ public class CustomerView extends BaseView<Customer> {
     role = new ComboBox<>(i18n("role"));
     important = new Checkbox(i18n("important"));
 
+    binder.forField(pesel).withValidator((v, c) -> peselValidation(v)).bind("pesel");
+    pesel.addValueChangeListener(this::onPeselChange);
+
     role.setItems(CustomerRole.values());
     role.setItemLabelGenerator(r -> i18n(CustomerRole.class, r.name()));
 
-    formLayout.add(firstName, lastName, email, phone, dateOfBirth, occupation, role, important);
+    formLayout.add(firstName, lastName, pesel, email, phone, dateOfBirth, occupation, role, important);
 
     return formLayout;
   }
+
+  private void onPeselChange(ComponentValueChangeEvent<TextField, String> event) {
+
+    LocalDate date = obtainDateFromPesel(event.getValue());
+
+    if (date != null) {
+      dateOfBirth.setValue(date);
+    }
+  }
+
 }
