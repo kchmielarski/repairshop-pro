@@ -1,7 +1,8 @@
 package com.wsiiz.repairshop.security.domain.useraccount;
 
-import com.wsiiz.repairshop.foundation.domain.AbstractFactory;
 import java.time.LocalDateTime;
+
+import com.wsiiz.repairshop.foundation.domain.AbstractFactory;
 import org.springframework.stereotype.Component;
 
 @Component
